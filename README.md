@@ -37,7 +37,7 @@ I want to bring the cabinet to the State of Play festival and the Project fair w
 - You can use the keyboard or mouse to control your game. I haven't figured out how to reprogram the controllers on the arcade cabinet yet, so you should start with the starter code, which loads the keyboard bindings from a properties file. 
 - You should try and use git to manage your source code for the project and submit a link to your git repo. I will look at your git logs to see how much time you have spend on this assignment.
 - You should spend at least 2 full days on the assignment.
-- The assignment is due to be demoed in the lab the week of 19 January.
+- The assignment is due to be demoed in the lab the week of 26 January.
 
 Alternatively! You can form a team to do an Imagine Cup project, however the rubrick below aplies regardless of what project you decide to do.
 
