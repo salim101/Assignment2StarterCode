@@ -16,7 +16,7 @@ class Background extends GameObject{
   void update(){
    pos.y += speed;
   if(pos.y >= 0){
-   pos.y = -500;
+   pos.y = -height;
   } 
   }
   void display(){

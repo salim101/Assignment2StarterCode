@@ -8,7 +8,7 @@
 
 ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
-float gameSpeed = 0.1f, slowdown = 1.0f;
+float gameSpeed = 1.1f, slowdown = 1.0f;
 
 
 
@@ -16,9 +16,9 @@ float gameSpeed = 0.1f, slowdown = 1.0f;
 
 void setup()
 {
-  size(500, 500);
+  size(700, 700);
 
-  allobjects.add(new Background(-500, 500, 1000, "road.jpg"));
+  allobjects.add(new Background(-height, width, height*2, "road.jpg"));
   setUpPlayerControllers();
 }
 
@@ -102,17 +102,17 @@ void setUpPlayerControllers()
 {
   XML xml = loadXML("arcade.xml");
   XML[] children = xml.getChildren("player");
-  int gap =230;
-  int x = 115;
+  int gap =325;
+  int x = 155;
   for (int i = 0; i < children.length; i ++)  
   {
     XML playerXML = children[i];
     Player p = new Player(
     i
-      , "Car_1.png"
+      , "Car_" + (i+1) + ".png"
       , playerXML);
     p.pos.x = x;
-    p.pos.y = 420;
+    p.pos.y = 540;
     allobjects.add(p);
     x += gap;
   }
@@ -125,20 +125,21 @@ void setUpPlayerControllers()
 
 void inBounds(GameObject player)
 {
-  if (player.pos.x > width - player.w)
+  if (player.pos.x > 560 -player.w)
   {
-    player.pos.x = width - player.w;
-  }else if (player.pos.x < 0)
+    player.pos.x = 560 -player.w;
+    
+  }else if (player.pos.x < 140)
   {
-    player.pos.x = 0;
+    player.pos.x = 140;
   }
   
   
   
   
-  if (player.pos.y > 420)
+  if (player.pos.y > 540)
   {
-    player.pos.y = 420;
+    player.pos.y = 540;
   }
 }
 
