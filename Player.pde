@@ -1,6 +1,6 @@
-class Player
+class Player extends GameObject
 {
-  PVector pos;
+  //PVector pos;
   char up;
   char down;
   char left;
@@ -9,18 +9,18 @@ class Player
   char button1;
   char button2;
   int index;
-  color colour;
+  //color colour;
+  PImage bk_img;
     
   Player()
   {
     pos = new PVector(width / 2, height / 2);
   }
   
-  Player(int index, color colour, char up, char down, char left, char right, char start, char button1, char button2)
+  Player(int index, String imgPath, char up, char down, char left, char right, char start, char button1, char button2)
   {
     this();
     this.index = index;
-    this.colour = colour;
     this.up = up;
     this.down = down;
     this.left = left;
@@ -28,12 +28,13 @@ class Player
     this.start = start;
     this.button1 = button1;
     this.button2 = button2;
+    bk_img = loadImage(imgPath);
   }
   
-  Player(int index, color colour, XML xml)
+  Player(int index, String imgPath, XML xml)
   {
     this(index
-        , colour
+        , imgPath
         , buttonNameToKey(xml, "up")
         , buttonNameToKey(xml, "down")
         , buttonNameToKey(xml, "left")
@@ -48,19 +49,19 @@ class Player
   {
     if (checkKey(up))
     {
-      pos.y -= 1;
+      pos.y -= speed;
     }
     if (checkKey(down))
     {
-      pos.y += 1;
+      pos.y += speed;
     }
     if (checkKey(left))
     {
-      pos.x -= 1;
+      pos.x -= speed;
     }    
     if (checkKey(right))
     {
-      pos.x += 1;
+      pos.x += speed;
     }
     if (checkKey(start))
     {
@@ -78,8 +79,7 @@ class Player
   
   void display()
   {    
-    stroke(colour);
-    fill(colour);    
-    rect(pos.x, pos.y, 20, 20);
+        
+    image(bk_img,pos.x, pos.y, w, h);
   }  
 }
