@@ -7,8 +7,8 @@ class GameObject
   color colour;
 
   GameObject() {
-    w=60.0f;
-    h=110.0f;
+    w=40.0f;
+    h=70.0f;
     speed = 3.0f;
     theta=0.0f;
     alive=true;
