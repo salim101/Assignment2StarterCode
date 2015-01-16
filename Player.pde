@@ -15,7 +15,7 @@ class Player extends GameObject
 
   Player()
   {
-    alive=false;
+   // alive=false;
     pos = new PVector(width / 2, height / 2);
   }
 
@@ -51,6 +51,11 @@ class Player extends GameObject
 
   void update()
   {
+    if (checkKey(insertcoin))
+    {
+      coin =1;
+    }
+    
     if (checkKey(up))
     {
       pos.y -= speed;
@@ -67,10 +72,24 @@ class Player extends GameObject
     {
       pos.x += speed;
     }
-    if (checkKey(start))
-    {
-      println("Player " + index + " start");
-    }
+    if (checkKey(insertcoin))
+      {
+        println("Player " + index + " start");
+        println("Player " + index +  " coins " + coin);
+      }
+      
+      if (checkKey(start) && coin > 0)
+      {
+        coin = 0;
+        println("Player " + index + " coins" + coin);
+        game_state="";
+
+      }
+      
+   // if (checkKey(start))
+   // {
+     // println("Player " + index + " start");
+   // }
     if (checkKey(button1))
     {
       println("Player " + index + " button 1");
@@ -79,54 +98,11 @@ class Player extends GameObject
     {
       println("Player " + index + " butt2");
     } 
-    if (checkKey(insertcoin))
-    {
-      coin =1;
-    }
-    if (alive) {
-      if (checkKey(up))
-      {
-        pos.y -= speed;
-      }
-      if (checkKey(down))
-      {
-        pos.y += speed;
-      }
-      if (checkKey(left))
-      {
-        pos.x -= speed;
-      }    
-      if (checkKey(right))
-      {
-        pos.x += speed;
-      }
-      if (checkKey(start))
-      {
-        println("Player " + index + " start");
-      }
-      if (checkKey(button1))
-      {
-        println("Player " + index + " button 1");
-      }
-      if (checkKey(button2))
-      {
-        println("Player " + index + " butt2");
-      }
-    } else {
 
-      if (checkKey(start) && coin > 0)
-      {
-        coin = 0;
-        println("Player " + index + " coins" + coin);
-        game_state="";
-        alive=true;
-      }
-    }
-    if (checkKey(insertcoin))
-      {
-        println("Player " + index + " start");
-        println("Player " + index +  " coins " + coin);
-      }
+
+      
+    
+    
     }
 
     void display()

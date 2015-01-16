@@ -50,20 +50,8 @@ void draw()
 {
 
 
-  if (game_state == "first_screen")
-  {
-    image(imgStart, 0, 0, width, height);
-    textFont(font1);
-    fill(255,0,0);
-    text("Insert Coin to Play the Game", Cent_X-140, Cent_Y+200);
-    fill(255,128,0);
-    text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
-    text(coin, Cent_X-130, Cent_Y-170);
-    fill(51,255,51);
-    text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
-    text(coin_2, Cent_X+290, Cent_Y-170);
-  } 
-  else{
+  
+ // else{
 
 
     for (GameObject eachobject : allobjects)
@@ -95,7 +83,21 @@ void draw()
       }
     }
     
-  }
+  //}
+  
+  if (game_state == "first_screen")
+  {
+    image(imgStart, 0, 0, width, height);
+    textFont(font1);
+    fill(255,0,0);
+    text("Insert Coin to Play the Game", Cent_X-140, Cent_Y+200);
+    fill(255,128,0);
+    text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
+    text(coin, Cent_X-130, Cent_Y-170);
+    fill(51,255,51);
+    text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
+    text(coin_2, Cent_X+290, Cent_Y-170);
+  } 
   
 }
 
