@@ -12,10 +12,12 @@ class Player extends GameObject
   int index;
   //color colour;
   PImage bk_img;
+  int coin = 0;
+  boolean started;
 
   Player()
   {
-   // alive=false;
+    // alive=false;
     pos = new PVector(width / 2, height / 2);
   }
 
@@ -55,41 +57,32 @@ class Player extends GameObject
     {
       coin =1;
     }
-    
-    if (checkKey(up))
-    {
-      pos.y -= speed;
-    }
-    if (checkKey(down))
-    {
-      pos.y += speed;
-    }
-    if (checkKey(left))
-    {
-      pos.x -= speed;
-    }    
-    if (checkKey(right))
-    {
-      pos.x += speed;
-    }
-    if (checkKey(insertcoin))
-      {
-        println("Player " + index + " start");
-        println("Player " + index +  " coins " + coin);
-      }
-      
-      if (checkKey(start) && coin > 0)
-      {
-        coin = 0;
-        println("Player " + index + " coins" + coin);
-        game_state="";
 
+    if (started) {
+      if (checkKey(up))
+      {
+        pos.y -= speed;
       }
-      
-   // if (checkKey(start))
-   // {
-     // println("Player " + index + " start");
-   // }
+      if (checkKey(down))
+      {
+        pos.y += speed;
+      }
+      if (checkKey(left))
+      {
+        pos.x -= speed;
+      }    
+      if (checkKey(right))
+      {
+        pos.x += speed;
+      }
+    }
+
+    if (checkKey(start) && coin > 0)
+    {
+      coin = 0;
+      started = true;
+    }
+
     if (checkKey(button1))
     {
       println("Player " + index + " button 1");
@@ -97,18 +90,14 @@ class Player extends GameObject
     if (checkKey(button2))
     {
       println("Player " + index + " butt2");
-    } 
-
-
-      
-    
-    
     }
+  }
 
-    void display()
-    {    
-
+  void display()
+  {
+    if (started) {
       image(bk_img, pos.x, pos.y, w, h);
     }
   }
+}
 

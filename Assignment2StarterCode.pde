@@ -12,28 +12,28 @@ float gameSpeed = 1.1f, slowdown = 1.0f;
 
 PImage imgStart;
 PFont font1, font2;
-int Cent_X,Cent_Y;
+int Cent_X, Cent_Y;
+
 
 String game_state = "first_screen";
-int coin,coin_2;
+float max_speed = 20, min_speed = 5;
 
 /*
 boolean sketchFullScreen()
-{
-  return true;
-}
-*/
+ {
+ return true;
+ }
+ */
 
 void setup()
 {
   size(700, 700);
   Cent_X = width / 2; 
   Cent_Y = height / 2;
-  
+
   imgStart = loadImage("SpyHunter.jpg");
   font1=createFont("Britannic Bold", 25);
-  coin =0;
-  coin_2 =0;
+
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
@@ -50,56 +50,54 @@ void draw()
 {
 
 
-  
- // else{
-
-
-    for (GameObject eachobject : allobjects)
-    {
-      eachobject.update();
-      eachobject.display();
-
-      if (eachobject instanceof Player) {
-
-        eachobject.pos.y += slowdown;
-
-        if (eachobject.pos.y < 250) {
-          if (gameSpeed < 10.0f) {
-            gameSpeed += 0.1f;
-          }
-        } else if (eachobject.pos.y > 400) {
-          if (gameSpeed > 2.0f) {
-            gameSpeed -= 0.1f;
-          }
-        }
-
-        inBounds(eachobject);
-      }
-
-
-
-      if (eachobject instanceof Background) {
-        eachobject.speed = gameSpeed;
-      }
-    }
-    
-  //}
-  
   if (game_state == "first_screen")
   {
     image(imgStart, 0, 0, width, height);
+
     textFont(font1);
-    fill(255,0,0);
+    fill(255, 0, 0);
     text("Insert Coin to Play the Game", Cent_X-140, Cent_Y+200);
-    fill(255,128,0);
-    text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
-    text(coin, Cent_X-130, Cent_Y-170);
-    fill(51,255,51);
-    text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
-    text(coin_2, Cent_X+290, Cent_Y-170);
-  } 
-  
-}
+
+    for (GameObject eachobject : allobjects)
+    {
+
+      if (eachobject instanceof Player) {
+        eachobject.update();
+        if (eachobject instanceof Player) {
+          Player p = (Player) eachobject;
+
+          if (p.index == 1) {
+            fill(255, 128, 0);
+            text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
+            text(p.coin, Cent_X-130, Cent_Y-170);
+          } else if (p.index == 2) {
+            fill(51, 255, 51);
+            text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
+            text(p.coin, Cent_X+290, Cent_Y-170);
+          }
+          if (p.started) {
+            game_state = "playing";
+          }
+        }
+      }
+    }
+  } // End first screen.
+
+
+
+  if (game_state == "playing")
+  {
+    for (GameObject eachobject : allobjects)
+    {
+      if (eachobject instanceof Player) {
+        Player p = (Player) eachobject;
+        inBounds(p);
+      }
+      eachobject.update();
+      eachobject.display();
+    }
+  } // End playing.
+} // End draw.
 
 void keyPressed()
 {
@@ -149,7 +147,7 @@ void setUpPlayerControllers()
   {
     XML playerXML = children[i];
     Player p = new Player(
-    i
+    i + 1
       , "Car_" + (i+1) + ".png"
       , playerXML);
     p.pos.x = x;
@@ -174,10 +172,10 @@ void inBounds(GameObject player)
     player.pos.x = width/4;
   }
 
-
-
-
-  if (player.pos.y > 540)
+  if (player.pos.y < 240)
+  {
+    player.pos.y = 240;
+  } else if (player.pos.y > 540)
   {
     player.pos.y = 540;
   }
