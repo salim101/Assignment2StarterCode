@@ -8,7 +8,7 @@
 
 ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
-float gameSpeed = 1.1f, slowdown = 1.0f;
+float game_speed = 1.1f, slowdown = 1.0f;
 
 PImage imgStart;
 PFont font1, font2;
@@ -37,6 +37,14 @@ void setup()
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
+
+  for (int i = 0; i < 4; i++) {
+    allobjects.add(new Car("Bad_Car" + (i+1) + ".png"));
+  }
+
+
+
+
   setUpPlayerControllers();
 }
 
@@ -87,15 +95,84 @@ void draw()
 
   if (game_state == "playing")
   {
-    for (GameObject eachobject : allobjects)
-    {
-      if (eachobject instanceof Player) {
-        Player p = (Player) eachobject;
+
+    println(allobjects.size());
+
+    for (int i = 0; i < allobjects.size (); i++) {
+
+
+      // It's a player
+      if (allobjects.get(i) instanceof Player) {
+        Player p = (Player) allobjects.get(i);
         inBounds(p);
+        if (p.started && p.pos.y < 400) {
+          if (game_speed < max_speed)
+          {
+            game_speed += 0.1;
+          }
+        } else if (p.started && p.pos.y > 500) {
+          if (game_speed > min_speed)
+          {
+            game_speed -= 0.1;
+          }
+        }
+      } // Player.
+
+      // It's the background
+      if (allobjects.get(i) instanceof Background) {
+        allobjects.get(i).speed = game_speed;
+      } // Background.
+
+      // It's a car
+      if (allobjects.get(i) instanceof Car) {
+        respawnCars(allobjects.get(i));
+      } // Car.
+      
+      if(allobjects.get(i).alive == false){
+        allobjects.remove(allobjects.get(i));
       }
-      eachobject.update();
-      eachobject.display();
-    }
+      allobjects.get(i).update();
+      allobjects.get(i).display();
+    } // End for loop.
+
+
+
+
+    /*
+    for (GameObject eachobject : allobjects)
+     {
+     
+     // It's a player
+     if (eachobject instanceof Player) {
+     Player p = (Player) eachobject;
+     inBounds(p);
+     if (p.started && p.pos.y < 400) {
+     if (game_speed < max_speed)
+     {
+     game_speed += 0.1;
+     }
+     } else if (p.started && p.pos.y > 500) {
+     if (game_speed > min_speed)
+     {
+     game_speed -= 0.1;
+     }
+     }
+     } // Player.
+     
+     // It's the background
+     if (eachobject instanceof Background) {
+     eachobject.speed = game_speed;
+     } // Background.
+     
+     // It's a car
+     if (eachobject instanceof Car) {
+     respawnCars(eachobject);
+     } // Car.
+     
+     eachobject.update();
+     eachobject.display();
+     }
+     */
   } // End playing.
 } // End draw.
 
@@ -162,6 +239,7 @@ void setUpPlayerControllers()
 
 
 
+
 void inBounds(GameObject player)
 {
   if (player.pos.x > ((width/4)*3) -player.w)
@@ -178,6 +256,18 @@ void inBounds(GameObject player)
   } else if (player.pos.y > 540)
   {
     player.pos.y = 540;
+  }
+}
+
+
+
+
+void respawnCars(GameObject car) {
+  if (car.pos.y > height) {
+    car.alive = false;
+    int rnd = (int) random(1, 5);
+    allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+    
   }
 }
 
