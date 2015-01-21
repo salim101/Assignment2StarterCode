@@ -15,6 +15,10 @@ class Player extends GameObject
   int coin = 0;
   boolean started;
 
+
+  ArrayList<GameObject> bullets = new ArrayList<GameObject>();
+
+
   Player()
   {
     // alive=false;
@@ -85,19 +89,51 @@ class Player extends GameObject
 
     if (checkKey(button1))
     {
-      println("Player " + index + " button 1");
+      // Bullet(float x, float y, String imgPath, float speed)
+      //Bullet bullet = new Bullet(pos.x + 10, pos.y, "bullet.png", 8.0);
+
+      if (frameCount % 10 == 0) {
+        bullets.add(new Bullet(pos.x + 6, pos.y, "bullet.png", 8.0));
+        bullets.add(new Bullet(pos.x + 30, pos.y, "bullet.png", 8.0));
+      }
     }
     if (checkKey(button2))
     {
-      println("Player " + index + " butt2");
+      //println("Player " + index + " butt2");
     }
   }
 
   void display()
   {
     if (started) {
+      for (int i = 0; i < bullets.size (); i++) {
+
+        bullets.get(i).update();
+        bullets.get(i).display();
+
+        if (bullets.get(i).pos.y + bullets.get(i).h < 0) {
+          bullets.get(i).alive = false;
+        }
+
+        if (bullets.get(i).alive == false) {
+          bullets.remove( bullets.get(i) );
+        }
+      }
       image(bk_img, pos.x, pos.y, w, h);
+
+      println(bullets.size());
     }
-  }
+  } // End display
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
 
