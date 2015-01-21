@@ -98,9 +98,6 @@ void draw()
 
     for (int i = 0; i < allobjects.size (); i++) {
 
-
-
-
       // It's the background
       if (allobjects.get(i) instanceof Background) {
         allobjects.get(i).speed = game_speed;
@@ -108,12 +105,14 @@ void draw()
 
       // It's a car
       if (allobjects.get(i) instanceof Car) {
-        respawnCars(allobjects.get(i));
-
-
+        Car car = (Car) allobjects.get(i);
+        respawnCars(car);
         for (int j = 0; j < allobjects.size (); j++) {
-          if (allobjects.get(j) instanceof Player) {
-            carCrashesIntoPlayer(allobjects.get(i), allobjects.get(j));
+          if (j != i) {
+            if (allobjects.get(j) instanceof Player) {
+              Player player = (Player) allobjects.get(j);
+              carCrashesIntoPlayer(car, player);
+            }
           }
         }
       } // Car.
@@ -133,13 +132,21 @@ void draw()
             game_speed -= 0.1;
           }
         }
+
+        for (int j = 0; j < allobjects.size (); j++) {
+          if ( allobjects.get(j) instanceof Car) {
+            Car c = (Car) allobjects.get(j);
+            PlayerShootCar(p, c);
+          }
+        }
       } // Player.
+
+      allobjects.get(i).update();
+      allobjects.get(i).display();
 
       if (allobjects.get(i).alive == false) {
         allobjects.remove(allobjects.get(i));
       }
-      allobjects.get(i).update();
-      allobjects.get(i).display();
     } // End for loop.
 
 
@@ -279,12 +286,46 @@ void respawnCars(GameObject car) {
 
 
 
-void carCrashesIntoPlayer(GameObject c, GameObject p) {
-  if (c.pos.y + c.h > p.pos.y && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
-    c.alive = false;
-    int rnd = (int) random(1, 5);
-    allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+void carCrashesIntoPlayer(Car c, Player p) {
+  if (p.started) {
+    if (c.pos.y + c.h > p.pos.y && c.pos.y < p.pos.y + p.h && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
+      c.alive = false;
+      int rnd = (int) random(1, 5);
+      allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+    }
   }
 }
 
+
+void PlayerShootCar(Player p, Car c) {
+  if (p.started) {
+    for (int i =0; i < p.bullets.size (); i++) {
+      if (p.bullets.get(i).pos.y < c.pos.y + c.h &&
+        p.bullets.get(i).pos.y + p.bullets.get(i).h > c.pos.y &&
+        p.bullets.get(i).pos.x + p.bullets.get(i).w > c.pos.x &&
+        p.bullets.get(i).pos.x < c.pos.x + c.w) {
+        p.bullets.get(i).alive = false;
+        c.alive = false;
+        int rnd = (int) random(1, 5);
+        allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+      }
+    }
+  }
+}
+
+void PlayerCrashesIntoPlayer(Player p, Car c) {
+  if (p.started) {
+    for (int i =0; i < p.bullets.size (); i++) {
+      if (p.bullets.get(i).pos.y < c.pos.y + c.h &&
+        p.bullets.get(i).pos.y + p.bullets.get(i).h > c.pos.y &&
+        p.bullets.get(i).pos.x + p.bullets.get(i).w > c.pos.x &&
+        p.bullets.get(i).pos.x < c.pos.x + c.w) {
+        p.bullets.get(i).alive = false;
+        c.alive = false;
+        int rnd = (int) random(1, 5);
+        allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+      }
+    }
+  }
+}
 
