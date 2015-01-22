@@ -14,6 +14,8 @@ class Player extends GameObject
   PImage bk_img;
   int coin = 0;
   boolean started;
+  int score;
+  int health;
 
 
   ArrayList<GameObject> bullets = new ArrayList<GameObject>();
@@ -23,6 +25,8 @@ class Player extends GameObject
   {
     // alive=false;
     pos = new PVector(width / 2, height / 2);
+    score = 0;
+    health=50;
   }
 
   Player(int index, String imgPath, char up, char down, char left, char right, char start, char button1, char button2, char insertcoin)

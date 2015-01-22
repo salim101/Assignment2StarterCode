@@ -17,6 +17,7 @@ int score =0;
 
 String game_state = "first_screen";
 float max_speed = 20, min_speed = 5;
+int counter = 10;
 
 /*
 boolean sketchFullScreen()
@@ -38,14 +39,12 @@ void setup()
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
 
+  setUpPlayerControllers();
+
+
   for (int i = 0; i < 4; i++) {
     allobjects.add(new Car("Bad_Car" + (i+1) + ".png"));
   }
-
-
-
-
-  setUpPlayerControllers();
 }
 
 
@@ -93,18 +92,20 @@ void draw()
 
 
 
-  if (game_state == "playing")
+  else if (game_state == "playing")
   {
 
 
     for (int i = 0; i < allobjects.size (); i++) {
-      
-      
-      
+
+
       // It's the background
       if (allobjects.get(i) instanceof Background) {
         allobjects.get(i).speed = game_speed;
       } // Background.
+
+
+
 
       // It's a car
       if (allobjects.get(i) instanceof Car) {
@@ -120,9 +121,14 @@ void draw()
         }
       } // Car.
 
+
+
+
+
       // It's a player
       if (allobjects.get(i) instanceof Player) {
         Player p = (Player) allobjects.get(i);
+        PlayersInfo(p);
         inBounds(p);
         if (p.started && p.pos.y < 400) {
           if (game_speed < max_speed)
@@ -147,14 +153,11 @@ void draw()
             Car c = (Car) allobjects.get(j);
             PlayerShootCar(p, c);
           }
-          /////////
-          if (allobjects.get(j) instanceof Player) {
-            Player p2 = (Player) allobjects.get(j);
-            PlayersInfo(p, p2);
-          }
-          
         }
       } // Player.
+
+
+
 
       allobjects.get(i).update();
       allobjects.get(i).display();
@@ -163,9 +166,36 @@ void draw()
         allobjects.remove(allobjects.get(i));
       }
     } // End for loop.
-
-
   } // End playing.
+
+  else if (game_state == "GameOver") {
+    background(0);
+    textFont(font1);
+    fill(255, 0, 0);
+    text("Game Over", Cent_X-50, Cent_Y-300);
+    ////////////////////////////////////////////////////////////////////////
+    for (GameObject eachobject : allobjects)
+    {
+      if (eachobject instanceof Player) {
+        Player p = (Player) eachobject;
+
+        if (p.index == 1 && p.started) {
+          textFont(font1);
+          fill(255, 128, 0);
+          text("Player 1: ", Cent_X-330, Cent_Y-250);
+          text("Score: " + p.score, Cent_X-330, Cent_Y-210);
+        }
+        if (p.index == 2 && p.started) {
+          textFont(font1);
+          fill(0, 255, 0);
+          text("Player 2: ", Cent_X+200, Cent_Y-250);
+          text("Score: " + p.score, Cent_X+200, Cent_Y-210);
+        }
+
+      }
+    }
+    
+  }
 } // End draw.
 
 void keyPressed()
@@ -270,6 +300,30 @@ void carCrashesIntoPlayer(Car c, Player p) {
       c.alive = false;
       int rnd = (int) random(1, 5);
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+
+      p.health-=10;
+
+      if (p.index == 1 && p.health ==0) {
+        textFont(font1);
+        fill(255, 0, 0);
+        text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
+        p.alive=false;
+        game_state = "GameOver";
+      } else if (p.index == 2 && p.health ==0) {
+        p.alive=false;
+        textFont(font1);
+        fill(255, 0, 0);
+        text("PLayer 2 gone", Cent_X+200, Cent_Y-100);
+        game_state = "GameOver";
+      }
+      /*
+       else if(p.index == 1 && p.health ==0  && p.alive==false ) {
+       //p.alive=false;
+       textFont(font1);
+       fill(255, 0, 0);
+       text("Game Over", Cent_X, Cent_Y);
+       }
+       */
     }
   }
 }//end carCrashesIntoPlayer
@@ -283,6 +337,7 @@ void PlayerShootCar(Player p, Car c) {
         p.bullets.get(i).pos.x + p.bullets.get(i).w > c.pos.x &&
         p.bullets.get(i).pos.x < c.pos.x + c.w) {
         p.bullets.get(i).alive = false;
+        p.score +=5;
         c.alive = false;
         int rnd = (int) random(1, 5);
         allobjects.add(new Car("Bad_Car" + rnd + ".png"));
@@ -308,12 +363,24 @@ void PlayerCrashesIntoPlayer(Player p1, Player p2) {
 }//end PlayerCrashesIntoPlayer
 
 
-void PlayersInfo(Player p1, Player p2) {
-  if ((p1.started) && (p2.started)) {
+void PlayersInfo(Player p) {
+
+  if (p.index == 1 && p.started) {
     textFont(font1);
-      fill(255, 0, 0);
-      text("Player 1: ", Cent_X-330, Cent_Y-250);
-      text("Player 2: ", Cent_X+330, Cent_Y-250);
+    fill(255, 128, 0);
+    text("Player 1: ", Cent_X-330, Cent_Y-250);
+    text("Score: " + p.score, Cent_X-330, Cent_Y-210);
+    //text(p1.score, Cent_X-330, Cent_Y-210);
+    text("Health: " + p.health, Cent_X-330, Cent_Y-170);
+    text("Speed: " + ( ((int) game_speed * p.pos.y)/100 ) + "kmp", Cent_X-330, Cent_Y-130);
+  }
+  if (p.index == 2 && p.started) {
+    textFont(font1);
+    fill(0, 255, 0);
+    text("Player 2: ", Cent_X+200, Cent_Y-250);
+    text("Score: " + p.score, Cent_X+200, Cent_Y-210);
+    text("Health: "+ p.health, Cent_X+200, Cent_Y-170);
+    text("Speed: "+ ( ((int) game_speed * p.pos.y)/100 ) + "kmp", Cent_X+180, Cent_Y-130);
   }
 }
 
