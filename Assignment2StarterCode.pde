@@ -13,7 +13,7 @@ float game_speed = 1.1f, slowdown = 1.0f;
 PImage imgStart;
 PFont font1, font2;
 int Cent_X, Cent_Y;
-
+int score =0;
 
 String game_state = "first_screen";
 float max_speed = 20, min_speed = 5;
@@ -96,8 +96,11 @@ void draw()
   if (game_state == "playing")
   {
 
-    for (int i = 0; i < allobjects.size (); i++) {
 
+    for (int i = 0; i < allobjects.size (); i++) {
+      
+      
+      
       // It's the background
       if (allobjects.get(i) instanceof Background) {
         allobjects.get(i).speed = game_speed;
@@ -134,10 +137,22 @@ void draw()
         }
 
         for (int j = 0; j < allobjects.size (); j++) {
+
+          if (allobjects.get(j) instanceof Player) {
+            Player p2 = (Player) allobjects.get(j);
+            PlayerCrashesIntoPlayer(p, p2);
+          }
+
           if ( allobjects.get(j) instanceof Car) {
             Car c = (Car) allobjects.get(j);
             PlayerShootCar(p, c);
           }
+          /////////
+          if (allobjects.get(j) instanceof Player) {
+            Player p2 = (Player) allobjects.get(j);
+            PlayersInfo(p, p2);
+          }
+          
         }
       } // Player.
 
@@ -150,43 +165,6 @@ void draw()
     } // End for loop.
 
 
-
-
-    /*
-    for (GameObject eachobject : allobjects)
-     {
-     
-     // It's a player
-     if (eachobject instanceof Player) {
-     Player p = (Player) eachobject;
-     inBounds(p);
-     if (p.started && p.pos.y < 400) {
-     if (game_speed < max_speed)
-     {
-     game_speed += 0.1;
-     }
-     } else if (p.started && p.pos.y > 500) {
-     if (game_speed > min_speed)
-     {
-     game_speed -= 0.1;
-     }
-     }
-     } // Player.
-     
-     // It's the background
-     if (eachobject instanceof Background) {
-     eachobject.speed = game_speed;
-     } // Background.
-     
-     // It's a car
-     if (eachobject instanceof Car) {
-     respawnCars(eachobject);
-     } // Car.
-     
-     eachobject.update();
-     eachobject.display();
-     }
-     */
   } // End playing.
 } // End draw.
 
@@ -246,7 +224,7 @@ void setUpPlayerControllers()
     allobjects.add(p);
     x += gap;
   }
-}
+}//end setUpPlayerControllers
 
 
 
@@ -271,7 +249,7 @@ void inBounds(GameObject player)
   {
     player.pos.y = 540;
   }
-}
+}//end inBounds
 
 
 
@@ -282,7 +260,7 @@ void respawnCars(GameObject car) {
     int rnd = (int) random(1, 5);
     allobjects.add(new Car("Bad_Car" + rnd + ".png"));
   }
-}
+}//end respawnCars
 
 
 
@@ -294,7 +272,7 @@ void carCrashesIntoPlayer(Car c, Player p) {
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
     }
   }
-}
+}//end carCrashesIntoPlayer
 
 
 void PlayerShootCar(Player p, Car c) {
@@ -311,21 +289,31 @@ void PlayerShootCar(Player p, Car c) {
       }
     }
   }
-}
+}//end PlayerShootCar
 
-void PlayerCrashesIntoPlayer(Player p, Car c) {
-  if (p.started) {
-    for (int i =0; i < p.bullets.size (); i++) {
-      if (p.bullets.get(i).pos.y < c.pos.y + c.h &&
-        p.bullets.get(i).pos.y + p.bullets.get(i).h > c.pos.y &&
-        p.bullets.get(i).pos.x + p.bullets.get(i).w > c.pos.x &&
-        p.bullets.get(i).pos.x < c.pos.x + c.w) {
-        p.bullets.get(i).alive = false;
-        c.alive = false;
-        int rnd = (int) random(1, 5);
-        allobjects.add(new Car("Bad_Car" + rnd + ".png"));
-      }
+void PlayerCrashesIntoPlayer(Player p1, Player p2) {
+  if (p1.started && p2.started) {
+    if (p1.pos.y < p2.pos.y + p2.h &&
+      p1.pos.y + p1.h > p2.pos.y &&
+      p1.pos.x + p1.w > p2.pos.x &&
+      p1.pos.x < p2.pos.x + p2.w) {
+
+      //p1.alive = false;
+      //p2.alive = false;
+      p1.speed = -p1.speed;
+      p2.speed = -p2.speed;
+      println("player crashed");
     }
+  }
+}//end PlayerCrashesIntoPlayer
+
+
+void PlayersInfo(Player p1, Player p2) {
+  if ((p1.started) && (p2.started)) {
+    textFont(font1);
+      fill(255, 0, 0);
+      text("Player 1: ", Cent_X-330, Cent_Y-250);
+      text("Player 2: ", Cent_X+330, Cent_Y-250);
   }
 }
 
