@@ -47,6 +47,8 @@ void setup()
   }
 
   allobjects.add(new Extra_Health("extralive.png"));
+
+  allobjects.add(new Horse("horse.png"));
 }
 
 
@@ -125,6 +127,22 @@ void draw()
 
 
 
+      // It's a horse
+      if (allobjects.get(i) instanceof Horse) {
+        Horse horse = (Horse) allobjects.get(i);
+        respawnHorse(horse);
+        for (int j = 0; j < allobjects.size (); j++) {
+          if (j != i) {
+            if (allobjects.get(j) instanceof Player) {
+              Player player = (Player) allobjects.get(j);
+              HorseCrashesIntoPlayer(horse, player);
+            }
+          }
+        }
+      } // horse.
+
+
+
       // It's a extra health
       if ( allobjects.get(i) instanceof Extra_Health) {
         Extra_Health eh = (Extra_Health) allobjects.get(i);
@@ -148,6 +166,7 @@ void draw()
         Player p = (Player) allobjects.get(i);
         PlayersInfo(p);
         inBounds(p);
+        PlayerScore(p);
         if (p.started && p.pos.y < 400) {
           if (game_speed < max_speed)
           {
@@ -170,6 +189,11 @@ void draw()
           if ( allobjects.get(j) instanceof Car) {
             Car c = (Car) allobjects.get(j);
             PlayerShootCar(p, c);
+          }
+          
+          if ( allobjects.get(j) instanceof Horse) {
+            Horse h = (Horse) allobjects.get(j);
+            PlayerShootHorse(p, h);
           }
         }
       } // Player.
@@ -203,12 +227,17 @@ void draw()
           fill(255, 128, 0);
           text("Player 1: ", Cent_X-330, Cent_Y-180);
           text("Score: " + p.score, Cent_X-330, Cent_Y-140);
+          p.alive=false;
+          //p.started=false;
+          
         }
         if (p.index == 2 && p.started) {
           textFont(font1);
           fill(0, 255, 0);
           text("Player 2: ", Cent_X+200, Cent_Y-180);
           text("Score: " + p.score, Cent_X+200, Cent_Y-140);
+          p.alive=false;
+          //p.started=false;
         }
       }
     }
@@ -267,7 +296,7 @@ void setUpPlayerControllers()
       , "Car_" + (i+1) + ".png"
       , playerXML);
     p.pos.x = x;
-    p.pos.y = 540;
+    p.pos.y = Cent_Y +190;
     allobjects.add(p);
     x += gap;
   }
@@ -289,12 +318,12 @@ void inBounds(GameObject player)
     player.pos.x = width/4;
   }
 
-  if (player.pos.y < 240)
+  if (player.pos.y < Cent_Y -110)
   {
-    player.pos.y = 240;
-  } else if (player.pos.y > 540)
+    player.pos.y = Cent_Y -110;
+  } else if (player.pos.y > Cent_Y +190)
   {
-    player.pos.y = 540;
+    player.pos.y = Cent_Y +190;
   }
 }//end inBounds
 
@@ -314,7 +343,14 @@ void respawnExtraHealth(GameObject eh) {
     eh.alive = false;
     allobjects.add(new Extra_Health("extralive.png"));
   }
-}//end respawnCars
+}//end respawnExtraHealth
+
+void respawnHorse(GameObject horse) {
+  if (horse.pos.y > height) {
+    horse.alive = false;
+    allobjects.add(new Horse("horse.png"));
+  }
+}//end respawnExtraHealth
 
 
 
@@ -324,30 +360,7 @@ void carCrashesIntoPlayer(Car c, Player p) {
       c.alive = false;
       int rnd = (int) random(1, 6);
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
-
       p.health-=10;
-
-      if (p.index == 1 && p.health ==0) {
-        textFont(font1);
-        fill(255, 0, 0);
-        text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
-        p.alive=false;
-        game_state = "GameOver";
-      } else if (p.index == 2 && p.health ==0) {
-        p.alive=false;
-        textFont(font1);
-        fill(255, 0, 0);
-        text("PLayer 2 gone", Cent_X+200, Cent_Y-100);
-        game_state = "GameOver";
-      }
-      /*
-       else if(p.index == 1 && p.health ==0  && p.alive==false ) {
-       //p.alive=false;
-       textFont(font1);
-       fill(255, 0, 0);
-       text("Game Over", Cent_X, Cent_Y);
-       }
-       */
     }
   }
 }//end carCrashesIntoPlayer
@@ -369,6 +382,34 @@ void PlayerShootCar(Player p, Car c) {
     }
   }
 }//end PlayerShootCar
+
+void PlayerShootHorse(Player p, Horse h) {
+  if (p.started) {
+    for (int i =0; i < p.bullets.size (); i++) {
+      if (p.bullets.get(i).pos.y < h.pos.y + h.h &&
+        p.bullets.get(i).pos.y + p.bullets.get(i).h > h.pos.y &&
+        p.bullets.get(i).pos.x + p.bullets.get(i).w > h.pos.x &&
+        p.bullets.get(i).pos.x < h.pos.x + h.w) {
+        p.bullets.get(i).alive = false;
+        p.score +=10;
+        h.alive = false;
+        allobjects.add(new Horse("horse.png"));
+      }
+    }
+  }
+}//end PlayerShootHorse
+
+
+void HorseCrashesIntoPlayer(Horse h, Player p) {
+  if (p.started) {
+    if (h.pos.y + h.h > p.pos.y && h.pos.y < p.pos.y + p.h && h.pos.x + h.w > p.pos.x && h.pos.x < p.pos.x+p.w) {
+      h.alive = false;
+
+      allobjects.add(new Horse("horse.png"));
+      p.health-=20;
+    }
+  }
+}//HorseCrashesIntoPlayer
 
 void PlayerCrashesIntoPlayer(Player p1, Player p2) {
   if (p1.started && p2.started) {
@@ -419,6 +460,33 @@ void PLayerGetsExtraHealth(Extra_Health eh, Player p ) {
         p.health +=10;
       }
     }
+  }
+}
+
+void PlayerScore(Player p) {
+  if (p.started) {
+    if (p.index == 1 && p.health ==0) {
+      textFont(font1);
+      fill(255, 0, 0);
+      text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
+      game_state = "GameOver";
+      //p.alive=false;
+    } else if (p.index == 2 && p.health ==0) {
+      
+      textFont(font1);
+      fill(255, 0, 0);
+      text("PLayer 2 gone", Cent_X+200, Cent_Y-100);
+      game_state = "GameOver";
+     // p.alive=false;
+    }
+    /*
+       else if(p.index == 1 && p.health ==0  && p.alive==false ) {
+     //p.alive=false;
+     textFont(font1);
+     fill(255, 0, 0);
+     text("Game Over", Cent_X, Cent_Y);
+     }
+     */
   }
 }
 
