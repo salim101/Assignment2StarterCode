@@ -1,7 +1,7 @@
 class Car extends GameObject
 {
 
-  PImage bk_img;
+  PImage car_img;
 
   Car() {
     pos.x = random( width/4, ((width/4)*3) -w  );
@@ -10,7 +10,7 @@ class Car extends GameObject
 
   Car(String imgPath) {
     this();
-    bk_img = loadImage(imgPath);
+    car_img = loadImage(imgPath);
   }
   
   
@@ -21,7 +21,7 @@ class Car extends GameObject
   
   
   void display(){
-    image(bk_img, pos.x, pos.y, w, h);
+    image(car_img, pos.x, pos.y, w, h);
   }
   
 }

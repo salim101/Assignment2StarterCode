@@ -10,7 +10,7 @@ ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
 float game_speed = 1.1f, slowdown = 1.0f;
 
-PImage imgStart;
+PImage imgStart, imgOver;
 PFont font1, font2;
 int Cent_X, Cent_Y;
 int score =0;
@@ -34,7 +34,7 @@ void setup()
 
   imgStart = loadImage("SpyHunter.jpg");
   font1=createFont("Britannic Bold", 25);
-
+  imgOver= loadImage("GameOver.jpg");
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
@@ -42,9 +42,11 @@ void setup()
   setUpPlayerControllers();
 
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 6; i++) {
     allobjects.add(new Car("Bad_Car" + (i+1) + ".png"));
   }
+
+  allobjects.add(new Extra_Health("extralive.png"));
 }
 
 
@@ -123,6 +125,22 @@ void draw()
 
 
 
+      // It's a extra health
+      if ( allobjects.get(i) instanceof Extra_Health) {
+        Extra_Health eh = (Extra_Health) allobjects.get(i);
+        respawnExtraHealth(eh);
+
+        for (int j = 0; j < allobjects.size (); j++) {
+          if (j != i) {
+            if (allobjects.get(j) instanceof Player) {
+              Player p = (Player) allobjects.get(j);
+              PLayerGetsExtraHealth(eh, p);
+            }
+          }
+        }
+      }//end extra health
+
+
 
 
       // It's a player
@@ -169,10 +187,11 @@ void draw()
   } // End playing.
 
   else if (game_state == "GameOver") {
-    background(0);
-    textFont(font1);
-    fill(255, 0, 0);
-    text("Game Over", Cent_X-50, Cent_Y-300);
+    // background(0);
+    //textFont(font1);
+    //fill(255, 0, 0);
+    //text("Game Over", Cent_X-50, Cent_Y-300);
+    image(imgOver, 0, 0, width, height);
     ////////////////////////////////////////////////////////////////////////
     for (GameObject eachobject : allobjects)
     {
@@ -182,19 +201,17 @@ void draw()
         if (p.index == 1 && p.started) {
           textFont(font1);
           fill(255, 128, 0);
-          text("Player 1: ", Cent_X-330, Cent_Y-250);
-          text("Score: " + p.score, Cent_X-330, Cent_Y-210);
+          text("Player 1: ", Cent_X-330, Cent_Y-180);
+          text("Score: " + p.score, Cent_X-330, Cent_Y-140);
         }
         if (p.index == 2 && p.started) {
           textFont(font1);
           fill(0, 255, 0);
-          text("Player 2: ", Cent_X+200, Cent_Y-250);
-          text("Score: " + p.score, Cent_X+200, Cent_Y-210);
+          text("Player 2: ", Cent_X+200, Cent_Y-180);
+          text("Score: " + p.score, Cent_X+200, Cent_Y-140);
         }
-
       }
     }
-    
   }
 } // End draw.
 
@@ -292,13 +309,20 @@ void respawnCars(GameObject car) {
   }
 }//end respawnCars
 
+void respawnExtraHealth(GameObject eh) {
+  if (eh.pos.y > height) {
+    eh.alive = false;
+    allobjects.add(new Extra_Health("extralive.png"));
+  }
+}//end respawnCars
+
 
 
 void carCrashesIntoPlayer(Car c, Player p) {
   if (p.started) {
     if (c.pos.y + c.h > p.pos.y && c.pos.y < p.pos.y + p.h && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
       c.alive = false;
-      int rnd = (int) random(1, 5);
+      int rnd = (int) random(1, 6);
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
 
       p.health-=10;
@@ -339,7 +363,7 @@ void PlayerShootCar(Player p, Car c) {
         p.bullets.get(i).alive = false;
         p.score +=5;
         c.alive = false;
-        int rnd = (int) random(1, 5);
+        int rnd = (int) random(1, 6);
         allobjects.add(new Car("Bad_Car" + rnd + ".png"));
       }
     }
@@ -381,6 +405,20 @@ void PlayersInfo(Player p) {
     text("Score: " + p.score, Cent_X+200, Cent_Y-210);
     text("Health: "+ p.health, Cent_X+200, Cent_Y-170);
     text("Speed: "+ ( ((int) game_speed * p.pos.y)/100 ) + "kmp", Cent_X+180, Cent_Y-130);
+  }
+}
+
+void PLayerGetsExtraHealth(Extra_Health eh, Player p ) {
+  if (p.started) {
+    if (eh.pos.y + eh.h > p.pos.y && eh.pos.y < p.pos.y + p.h && eh.pos.x + eh.w > p.pos.x && eh.pos.x < p.pos.x+p.w) {
+      eh.alive = false;
+      //int rnd = (int) random(1, 6);
+      allobjects.add(new Extra_Health("extralive.png"));
+
+      if (p.health < 50) {
+        p.health +=10;
+      }
+    }
   }
 }
 

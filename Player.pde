@@ -11,7 +11,7 @@ class Player extends GameObject
   char insertcoin;
   int index;
   //color colour;
-  PImage bk_img;
+  PImage player_img;
   int coin = 0;
   boolean started;
   int score;
@@ -41,7 +41,7 @@ class Player extends GameObject
     this.button1 = button1;
     this.button2 = button2;
     this.insertcoin= insertcoin;
-    bk_img = loadImage(imgPath);
+    player_img = loadImage(imgPath);
   }
 
   Player(int index, String imgPath, XML xml)
@@ -123,7 +123,7 @@ class Player extends GameObject
           bullets.remove( bullets.get(i) );
         }
       }
-      image(bk_img, pos.x, pos.y, w, h);
+      image(player_img, pos.x, pos.y, w, h);
 
       println(bullets.size());
     }
