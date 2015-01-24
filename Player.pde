@@ -19,6 +19,7 @@ class Player extends GameObject
 
 
   ArrayList<GameObject> bullets = new ArrayList<GameObject>();
+  ArrayList<GameObject> bombs = new ArrayList<GameObject>();
 
 
   Player()
@@ -103,7 +104,9 @@ class Player extends GameObject
     }
     if (checkKey(button2))
     {
-      //println("Player " + index + " butt2");
+      if (frameCount % 10 == 0) {
+        bombs.add(new Bomb(pos.x + 15, pos.y, "bomb.jpg", 8.0));
+      }
     }
   }
 
@@ -121,6 +124,20 @@ class Player extends GameObject
 
         if (bullets.get(i).alive == false) {
           bullets.remove( bullets.get(i) );
+        }
+      }
+      
+      for (int i = 0; i < bombs.size (); i++) {
+
+        bombs.get(i).update();
+        bombs.get(i).display();
+
+        if (bombs.get(i).pos.y + bombs.get(i).h < 0) {
+          bombs.get(i).alive = false;
+        }
+
+        if (bombs.get(i).alive == false) {
+          bombs.remove( bombs.get(i) );
         }
       }
       image(player_img, pos.x, pos.y, w, h);

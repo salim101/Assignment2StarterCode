@@ -10,7 +10,7 @@ ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
 float game_speed = 1.1f, slowdown = 1.0f;
 
-PImage imgStart, imgOver;
+PImage imgStart, imgOver,bomb;
 PFont font1, font2;
 int Cent_X, Cent_Y;
 int score =0;
@@ -35,6 +35,7 @@ void setup()
   imgStart = loadImage("SpyHunter.jpg");
   font1=createFont("Britannic Bold", 25);
   imgOver= loadImage("GameOver.jpg");
+  bomb= loadImage("bomb1.jpg");
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
@@ -143,7 +144,7 @@ void draw()
 
 
 
-      // It's a extra health
+      // extra health
       if ( allobjects.get(i) instanceof Extra_Health) {
         Extra_Health eh = (Extra_Health) allobjects.get(i);
         respawnExtraHealth(eh);
@@ -194,6 +195,16 @@ void draw()
           if ( allobjects.get(j) instanceof Horse) {
             Horse h = (Horse) allobjects.get(j);
             PlayerShootHorse(p, h);
+          }
+          
+          if ( allobjects.get(j) instanceof Car) {
+            Car c = (Car) allobjects.get(j);
+            PlayerBombCar(p, c);
+          }
+          
+          if ( allobjects.get(j) instanceof Horse) {
+            Horse h = (Horse) allobjects.get(j);
+            PlayerBombHorse(p, h);
           }
         }
       } // Player.
@@ -398,6 +409,40 @@ void PlayerShootHorse(Player p, Horse h) {
     }
   }
 }//end PlayerShootHorse
+
+void PlayerBombCar(Player p, Car c) {
+  if (p.started) {
+    for (int i =0; i < p.bombs.size (); i++) {
+      if (p.bombs.get(i).pos.y < c.pos.y + c.h &&
+        p.bombs.get(i).pos.y + p.bombs.get(i).h > c.pos.y &&
+        p.bombs.get(i).pos.x + p.bombs.get(i).w > c.pos.x &&
+        p.bombs.get(i).pos.x < c.pos.x + c.w) {
+        p.bombs.get(i).alive = false;
+        //image(bomb, c.pos.x, c.pos.y, c.w, c.h);
+        p.score +=10;
+        c.alive = false;
+        int rnd = (int) random(1, 6);
+        allobjects.add(new Car("Bad_Car" + rnd + ".png"));
+      }
+    }
+  }
+}//end PlayerBombCar
+
+void PlayerBombHorse(Player p, Horse h) {
+  if (p.started) {
+    for (int i =0; i < p.bombs.size (); i++) {
+      if (p.bombs.get(i).pos.y < h.pos.y + h.h &&
+        p.bombs.get(i).pos.y + p.bombs.get(i).h > h.pos.y &&
+        p.bombs.get(i).pos.x + p.bombs.get(i).w > h.pos.x &&
+        p.bombs.get(i).pos.x < h.pos.x + h.w) {
+        p.bombs.get(i).alive = false;
+        p.score +=15;
+        h.alive = false;
+        allobjects.add(new Horse("horse.png"));
+      }
+    }
+  }
+}//end PlaPlayerBombHorse
 
 
 void HorseCrashesIntoPlayer(Horse h, Player p) {
