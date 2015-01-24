@@ -5,12 +5,16 @@
  Loads player properties from an xml file
  See: https://github.com/skooter500/DT228-OOP 
  */
+import ddf.minim.*; // import library for sound 
+Minim minim; // provides library of classes that work with sound files
+AudioPlayer Car_Crash_Sound;
+
 
 ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
 float game_speed = 1.1f, slowdown = 1.0f;
 
-PImage imgStart, imgOver,bomb;
+PImage imgStart, imgOver, bomb;
 PFont font1, font2;
 int Cent_X, Cent_Y;
 int score =0;
@@ -36,6 +40,10 @@ void setup()
   font1=createFont("Britannic Bold", 25);
   imgOver= loadImage("GameOver.jpg");
   bomb= loadImage("bomb1.jpg");
+
+  minim = new Minim(this);
+  Car_Crash_Sound=minim.loadFile("car_crash.wav");
+
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
@@ -88,6 +96,7 @@ void draw()
             text(p.coin, Cent_X+290, Cent_Y-170);
           }
           if (p.started) {
+
             game_state = "playing";
           }
         }
@@ -191,17 +200,17 @@ void draw()
             Car c = (Car) allobjects.get(j);
             PlayerShootCar(p, c);
           }
-          
+
           if ( allobjects.get(j) instanceof Horse) {
             Horse h = (Horse) allobjects.get(j);
             PlayerShootHorse(p, h);
           }
-          
+
           if ( allobjects.get(j) instanceof Car) {
             Car c = (Car) allobjects.get(j);
             PlayerBombCar(p, c);
           }
-          
+
           if ( allobjects.get(j) instanceof Horse) {
             Horse h = (Horse) allobjects.get(j);
             PlayerBombHorse(p, h);
@@ -240,7 +249,6 @@ void draw()
           text("Score: " + p.score, Cent_X-330, Cent_Y-140);
           p.alive=false;
           //p.started=false;
-          
         }
         if (p.index == 2 && p.started) {
           textFont(font1);
@@ -368,10 +376,13 @@ void respawnHorse(GameObject horse) {
 void carCrashesIntoPlayer(Car c, Player p) {
   if (p.started) {
     if (c.pos.y + c.h > p.pos.y && c.pos.y < p.pos.y + p.h && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
+      Car_Crash_Sound.rewind();
+      Car_Crash_Sound.play();
       c.alive = false;
       int rnd = (int) random(1, 6);
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
       p.health-=10;
+      
     }
   }
 }//end carCrashesIntoPlayer
@@ -516,13 +527,14 @@ void PlayerScore(Player p) {
       text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
       game_state = "GameOver";
       //p.alive=false;
-    } else if (p.index == 2 && p.health ==0) {
-      
+    }  
+    if (p.index == 2 && p.health ==0) {
+
       textFont(font1);
       fill(255, 0, 0);
       text("PLayer 2 gone", Cent_X+200, Cent_Y-100);
       game_state = "GameOver";
-     // p.alive=false;
+      // p.alive=false;
     }
     /*
        else if(p.index == 1 && p.health ==0  && p.alive==false ) {

@@ -1,5 +1,10 @@
 class Player extends GameObject
 {
+  AudioPlayer Coin_Sound;
+  AudioPlayer Player_Start_Sound;
+  AudioPlayer Accelerator_Sound;
+
+
   //PVector pos;
   char up;
   char down;
@@ -28,6 +33,9 @@ class Player extends GameObject
     pos = new PVector(width / 2, height / 2);
     score = 0;
     health=50;
+    Coin_Sound= minim.loadFile("Coin_Insertion.wav");
+    Player_Start_Sound= minim.loadFile("car_start.wav");
+    Accelerator_Sound= minim.loadFile("car_accelerating.wav");
   }
 
   Player(int index, String imgPath, char up, char down, char left, char right, char start, char button1, char button2, char insertcoin)
@@ -43,6 +51,7 @@ class Player extends GameObject
     this.button2 = button2;
     this.insertcoin= insertcoin;
     player_img = loadImage(imgPath);
+    
   }
 
   Player(int index, String imgPath, XML xml)
@@ -64,12 +73,17 @@ class Player extends GameObject
   {
     if (checkKey(insertcoin))
     {
+      Coin_Sound.rewind();
+      Coin_Sound.play(); 
+     
       coin =1;
     }
 
     if (started) {
       if (checkKey(up))
       {
+        Accelerator_Sound.rewind();
+        Accelerator_Sound.play();
         pos.y -= speed;
       }
       if (checkKey(down))
@@ -88,6 +102,8 @@ class Player extends GameObject
 
     if (checkKey(start) && coin > 0)
     {
+      Player_Start_Sound.rewind();
+      Player_Start_Sound.play(); 
       coin = 0;
       started = true;
     }
