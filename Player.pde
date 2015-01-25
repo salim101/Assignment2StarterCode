@@ -3,6 +3,9 @@ class Player extends GameObject
   AudioPlayer Coin_Sound;
   AudioPlayer Player_Start_Sound;
   AudioPlayer Accelerator_Sound;
+  AudioPlayer Player_left_right_Sound;
+  AudioPlayer bullet_Sound;
+  AudioPlayer bomb_Sound;
 
 
   //PVector pos;
@@ -36,6 +39,9 @@ class Player extends GameObject
     Coin_Sound= minim.loadFile("Coin_Insertion.wav");
     Player_Start_Sound= minim.loadFile("car_start.wav");
     Accelerator_Sound= minim.loadFile("car_accelerating.wav");
+    Player_left_right_Sound= minim.loadFile("car_left_right.wav");
+    bullet_Sound= minim.loadFile("bullet.wav");
+    bomb_Sound= minim.loadFile("bomb.wav");
   }
 
   Player(int index, String imgPath, char up, char down, char left, char right, char start, char button1, char button2, char insertcoin)
@@ -51,7 +57,6 @@ class Player extends GameObject
     this.button2 = button2;
     this.insertcoin= insertcoin;
     player_img = loadImage(imgPath);
-    
   }
 
   Player(int index, String imgPath, XML xml)
@@ -75,15 +80,15 @@ class Player extends GameObject
     {
       Coin_Sound.rewind();
       Coin_Sound.play(); 
-     
+
       coin =1;
     }
 
     if (started) {
       if (checkKey(up))
       {
-        Accelerator_Sound.rewind();
-        Accelerator_Sound.play();
+        //Accelerator_Sound.rewind();
+        //Accelerator_Sound.play();
         pos.y -= speed;
       }
       if (checkKey(down))
@@ -92,10 +97,16 @@ class Player extends GameObject
       }
       if (checkKey(left))
       {
+        //if (frameCount % 15 == 0) {
+       // Player_left_right_Sound.rewind();
+       // Player_left_right_Sound.play();
+       // }
         pos.x -= speed;
       }    
       if (checkKey(right))
       {
+        // Player_left_right_Sound.rewind();
+        // Player_left_right_Sound.play();
         pos.x += speed;
       }
     }
@@ -114,14 +125,19 @@ class Player extends GameObject
       //Bullet bullet = new Bullet(pos.x + 10, pos.y, "bullet.png", 8.0);
 
       if (frameCount % 10 == 0) {
+        bullet_Sound.rewind();
+        bullet_Sound.play();
         bullets.add(new Bullet(pos.x + 6, pos.y, "bullet.png", 8.0));
         bullets.add(new Bullet(pos.x + 30, pos.y, "bullet.png", 8.0));
       }
     }
     if (checkKey(button2))
     {
+
       if (frameCount % 10 == 0) {
-        bombs.add(new Bomb(pos.x + 15, pos.y, "bomb.jpg", 8.0));
+        bomb_Sound.rewind();
+        bomb_Sound.play();
+        bombs.add(new Bomb(pos.x + 15, pos.y, "bomb.png", 8.0));
       }
     }
   }
@@ -142,7 +158,7 @@ class Player extends GameObject
           bullets.remove( bullets.get(i) );
         }
       }
-      
+
       for (int i = 0; i < bombs.size (); i++) {
 
         bombs.get(i).update();
@@ -161,16 +177,5 @@ class Player extends GameObject
       println(bullets.size());
     }
   } // End display
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 }
 

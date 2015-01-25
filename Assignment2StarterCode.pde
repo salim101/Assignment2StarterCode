@@ -7,8 +7,11 @@
  */
 import ddf.minim.*; // import library for sound 
 Minim minim; // provides library of classes that work with sound files
-AudioPlayer Car_Crash_Sound;
-
+AudioPlayer Crash_Sound;
+AudioPlayer horse_Sound;
+AudioPlayer repair_Sound;
+AudioPlayer explosion_Sound;
+AudioPlayer Background_Sound;
 
 ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
@@ -42,8 +45,11 @@ void setup()
   bomb= loadImage("bomb1.jpg");
 
   minim = new Minim(this);
-  Car_Crash_Sound=minim.loadFile("car_crash.wav");
-
+  Crash_Sound=minim.loadFile("crash.wav");
+  horse_Sound=minim.loadFile("horse.wav");
+  repair_Sound=minim.loadFile("repair.wav");
+  explosion_Sound=minim.loadFile("explosion.wav");
+  Background_Sound= minim.loadFile("traffic_bg.wav");
 
 
   allobjects.add(new Background(-height, width, height*2, "road.jpg"));
@@ -108,7 +114,10 @@ void draw()
 
   else if (game_state == "playing")
   {
-
+    if (!Background_Sound.isPlaying()) { // check if background sound is playing or not, if not then 
+      Background_Sound.play(); // play the background sound 
+      Background_Sound.rewind(); // when background sound is finish, re-play the sound
+    }
 
     for (int i = 0; i < allobjects.size (); i++) {
 
@@ -376,13 +385,12 @@ void respawnHorse(GameObject horse) {
 void carCrashesIntoPlayer(Car c, Player p) {
   if (p.started) {
     if (c.pos.y + c.h > p.pos.y && c.pos.y < p.pos.y + p.h && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
-      Car_Crash_Sound.rewind();
-      Car_Crash_Sound.play();
+      Crash_Sound.rewind();
+      Crash_Sound.play();
       c.alive = false;
       int rnd = (int) random(1, 6);
       allobjects.add(new Car("Bad_Car" + rnd + ".png"));
       p.health-=10;
-      
     }
   }
 }//end carCrashesIntoPlayer
@@ -412,6 +420,8 @@ void PlayerShootHorse(Player p, Horse h) {
         p.bullets.get(i).pos.y + p.bullets.get(i).h > h.pos.y &&
         p.bullets.get(i).pos.x + p.bullets.get(i).w > h.pos.x &&
         p.bullets.get(i).pos.x < h.pos.x + h.w) {
+        horse_Sound.rewind();
+        horse_Sound.play();
         p.bullets.get(i).alive = false;
         p.score +=10;
         h.alive = false;
@@ -428,6 +438,8 @@ void PlayerBombCar(Player p, Car c) {
         p.bombs.get(i).pos.y + p.bombs.get(i).h > c.pos.y &&
         p.bombs.get(i).pos.x + p.bombs.get(i).w > c.pos.x &&
         p.bombs.get(i).pos.x < c.pos.x + c.w) {
+        explosion_Sound.rewind();
+        explosion_Sound.play();
         p.bombs.get(i).alive = false;
         //image(bomb, c.pos.x, c.pos.y, c.w, c.h);
         p.score +=10;
@@ -446,6 +458,8 @@ void PlayerBombHorse(Player p, Horse h) {
         p.bombs.get(i).pos.y + p.bombs.get(i).h > h.pos.y &&
         p.bombs.get(i).pos.x + p.bombs.get(i).w > h.pos.x &&
         p.bombs.get(i).pos.x < h.pos.x + h.w) {
+        explosion_Sound.rewind();
+        explosion_Sound.play();
         p.bombs.get(i).alive = false;
         p.score +=15;
         h.alive = false;
@@ -459,6 +473,8 @@ void PlayerBombHorse(Player p, Horse h) {
 void HorseCrashesIntoPlayer(Horse h, Player p) {
   if (p.started) {
     if (h.pos.y + h.h > p.pos.y && h.pos.y < p.pos.y + p.h && h.pos.x + h.w > p.pos.x && h.pos.x < p.pos.x+p.w) {
+      horse_Sound.rewind();
+      horse_Sound.play();
       h.alive = false;
 
       allobjects.add(new Horse("horse.png"));
@@ -508,6 +524,8 @@ void PlayersInfo(Player p) {
 void PLayerGetsExtraHealth(Extra_Health eh, Player p ) {
   if (p.started) {
     if (eh.pos.y + eh.h > p.pos.y && eh.pos.y < p.pos.y + p.h && eh.pos.x + eh.w > p.pos.x && eh.pos.x < p.pos.x+p.w) {
+      repair_Sound.rewind();
+      repair_Sound.play();
       eh.alive = false;
       //int rnd = (int) random(1, 6);
       allobjects.add(new Extra_Health("extralive.png"));
@@ -521,14 +539,14 @@ void PLayerGetsExtraHealth(Extra_Health eh, Player p ) {
 
 void PlayerScore(Player p) {
   if (p.started) {
-    if (p.index == 1 && p.health ==0) {
+    if (p.index == 1 && p.health <=0) {
       textFont(font1);
       fill(255, 0, 0);
       text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
       game_state = "GameOver";
       //p.alive=false;
     }  
-    if (p.index == 2 && p.health ==0) {
+    if (p.index == 2 && p.health <=0) {
 
       textFont(font1);
       fill(255, 0, 0);
