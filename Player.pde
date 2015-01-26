@@ -24,6 +24,7 @@ class Player extends GameObject
   boolean started;
   int score;
   int health;
+  float pspeed;
 
 
   ArrayList<GameObject> bullets = new ArrayList<GameObject>();
@@ -35,7 +36,8 @@ class Player extends GameObject
     // alive=false;
     pos = new PVector(width / 2, height / 2);
     score = 0;
-    health=50;
+    health=10;
+    pspeed=5.6f;
     Coin_Sound= minim.loadFile("Coin_Insertion.wav");
     Player_Start_Sound= minim.loadFile("car_start.wav");
     Accelerator_Sound= minim.loadFile("car_accelerating.wav");
@@ -82,6 +84,7 @@ class Player extends GameObject
       Coin_Sound.play(); 
 
       coin =1;
+      //started =true;
     }
 
     if (started) {
@@ -90,10 +93,12 @@ class Player extends GameObject
         //Accelerator_Sound.rewind();
         //Accelerator_Sound.play();
         pos.y -= speed;
+        pspeed++;
       }
       if (checkKey(down))
       {
         pos.y += speed;
+        pspeed--;
       }
       if (checkKey(left))
       {
