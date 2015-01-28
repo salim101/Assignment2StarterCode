@@ -6,23 +6,23 @@ class Car extends GameObject
   Car() {
     pos.x = random( width/4, ((width/4)*3) -w  );
     pos.y = random(  -height*3, -height  );
-  }
+  }//end Car
 
   Car(String imgPath) {
     this();
     car_img = loadImage(imgPath);
-  }
-  
-  
-  
-  void update(){
+  }//end Car
+
+
+
+  void update() {
     pos.y += speed;
-  }
-  
-  
-  void display(){
+  }//end update
+
+
+  void display() {
     image(car_img, pos.x, pos.y, w, h);
-  }
+  }//end display
   
-}
+}//end class
 

@@ -1,31 +1,32 @@
-class Bomb extends GameObject{
+class Bomb extends GameObject {
   PImage Bomb_img;
-  
-  Bomb(){
+
+  Bomb() {
     w = 10;
     h = 10;
-  }
-  
-  Bomb(String imgPath){
+  }//end Bomb
+
+  Bomb(String imgPath) {
     this();
     Bomb_img = loadImage(imgPath);
-  }
-  
-  Bomb(float x, float y, String imgPath, float speed){
+  }//end Bomb
+
+  Bomb(float x, float y, String imgPath, float speed) {
     this(imgPath);
     this.pos.x = x;
     this.pos.y = y;
     this.speed = speed;
-  }
-  
-  
-  void update(){
+  }//end Bomb
+
+
+  void update() {
     pos.y -= speed;
-  }
-  
-  
-  void display(){
+  }//end update
+
+
+  void display() {
     image(Bomb_img, pos.x, pos.y, w, h);
-  }
+  }//end display
   
-}
+}//end class
+

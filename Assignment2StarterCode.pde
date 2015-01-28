@@ -4,18 +4,32 @@
  
  Loads player properties from an xml file
  See: https://github.com/skooter500/DT228-OOP 
+ 
+ ======================================
+ Name :       Salim Uddin
+ Student No:  C12450132
+ =====================================
  */
 import ddf.minim.*; // import library for sound 
 Minim minim; // provides library of classes that work with sound files
+
+//  Set the audio players 
 AudioPlayer Crash_Sound;
 AudioPlayer horse_Sound;
 AudioPlayer repair_Sound;
 AudioPlayer explosion_Sound;
 AudioPlayer Background_Sound;
 
+//  Create an arraylist of game object
 ArrayList<GameObject> allobjects = new ArrayList<GameObject>();
 boolean[] keys = new boolean[526];
+
+// Declared variables
 float game_speed = 1.1f, slowdown = 1.0f;
+int PlayerPlaying  = 0;
+int PlayerDead =0;
+int gap =325;
+int x = 155;
 
 PImage imgStart, imgOver, imgInstruction, bomb;
 PFont font1, font2;
@@ -24,14 +38,13 @@ int score =0;
 
 String game_state = "MainScreen";
 float max_speed = 20, min_speed = 5;
-int counter = 10;
 
-/*
+
 boolean sketchFullScreen()
- {
- return true;
- }
- */
+{
+  return true;
+}
+
 
 void setup()
 {
@@ -39,13 +52,17 @@ void setup()
   Cent_X = width / 2; 
   Cent_Y = height / 2;
 
+  //  Load the images
   imgStart = loadImage("SpyHunter.jpg");
-  font1=createFont("Britannic Bold", 25);
-  font2=createFont("Britannic Bold", 18);
   imgOver= loadImage("GameOver.png");
   bomb= loadImage("bomb1.jpg");
   imgInstruction= loadImage("instruction.png");
 
+  //  Create fonts
+  font1=createFont("Britannic Bold", 25);
+  font2=createFont("Britannic", 18);
+
+  //  Load the audio
   minim = new Minim(this);
   Crash_Sound=minim.loadFile("crash.wav");
   horse_Sound=minim.loadFile("horse.wav");
@@ -54,18 +71,18 @@ void setup()
   Background_Sound= minim.loadFile("traffic_bg.wav");
 
 
-  allobjects.add(new Background(-height, width, height*2, "road.jpg"));
+  allobjects.add(new Background(-height, width, height*2, "road.jpg")); // add the background
 
-  setUpPlayerControllers();
+  setUpPlayerControllers();  
 
 
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++) {// loop to add the oncoming cars
     allobjects.add(new Car("Bad_Car" + (i+1) + ".png"));
   }
 
-  allobjects.add(new Extra_Health("extralive.png"));
+  allobjects.add(new Extra_Health("extralive.png"));// loop to add extra health point
 
-  allobjects.add(new Horse("horse.png"));
+  allobjects.add(new Horse("horse.png")); // loop to add the oncoming horses
 }
 
 
@@ -78,40 +95,38 @@ void draw()
 {
 
 
-  if (game_state == "MainScreen")
+  if (game_state == "MainScreen") // Draw Game Main Scren 
   {
     image(imgStart, 0, 0, width, height);
 
     textFont(font1);
     fill(255, 0, 0);
-    text("Insert Coin to Play the Game", Cent_X-140, Cent_Y+200);
+    text("Insert COIN and Press START to Play the Game", Cent_X-260, Cent_Y+220);
 
     for (GameObject eachobject : allobjects)
     {
 
       if (eachobject instanceof Player) {
         eachobject.update();
-        if (eachobject instanceof Player) {
-          Player p = (Player) eachobject;
+        Player p = (Player) eachobject;
 
-          if (p.index == 1) {
-            fill(255, 128, 0);
-            text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
-            text(p.coin, Cent_X-130, Cent_Y-170);
-          } else if (p.index == 2) {
-            fill(51, 255, 51);
-            text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
-            text(p.coin, Cent_X+290, Cent_Y-170);
-          }
-          if (p.started) {
-            game_state = "InstructionScreen";
-          }
+        if (p.index == 1) {
+          fill(255, 128, 0);
+          text("Player 1 Credit: ", Cent_X-320, Cent_Y-170);
+          text(p.coin, Cent_X-130, Cent_Y-170);
+        } else if (p.index == 2) {
+          fill(51, 255, 51);
+          text("Player 2 Credit: ", Cent_X+100, Cent_Y-170);
+          text(p.coin, Cent_X+290, Cent_Y-170);
         }
-      }
-    }
+        if (p.started) {
+          game_state = "InstructionScreen";
+        }
+      }//end if eachobject
+    }//end for loop
   } // End first screen.
 
-  else if (game_state == "InstructionScreen") {
+  else if (game_state == "InstructionScreen") { // Draw Game Main Scren
 
     background(255, 204, 153);
     image(imgInstruction, Cent_X-350, Cent_Y-340);
@@ -139,8 +154,8 @@ void draw()
     textFont(font2);
     fill(0);
     text("- Default Health is 50 and Maximun Health is 50 ", Cent_X-280, Cent_Y+140);
-    text("- 10 points will be taken if get hit by an oncoming car", Cent_X-280, Cent_Y+170);
-    text("- 20 points will be taken if get hit by an oncoming horse", Cent_X-280, Cent_Y+200);
+    text("- 10 points will be taken if you get hit by an oncoming car", Cent_X-280, Cent_Y+170);
+    text("- 20 points will be taken if you get hit by an oncoming horse", Cent_X-280, Cent_Y+200);
     text("- 5 points will be added to your score if you shoot oncoming car", Cent_X-280, Cent_Y+230);
     text("- 10 points will be added to your score if you shoot oncoming horse", Cent_X-280, Cent_Y+260);
     text("- 10 points will be added to your score if you bomb oncoming car", Cent_X-280, Cent_Y+290);
@@ -156,174 +171,179 @@ void draw()
         game_state = "playing";
       }
     }
-  } else if (game_state == "playing")
+  } //end InstructionScreen
+
+  else if (game_state == "playing") // Draw Game Play screen
   {
-  
-      if (!Background_Sound.isPlaying()) { // check if background sound is playing or not, if not then 
-        Background_Sound.play(); // play the background sound 
-        Background_Sound.rewind(); // when background sound is finish, re-play the sound
-      }
 
-      for (int i = 0; i < allobjects.size (); i++) {
+    if (!Background_Sound.isPlaying()) { // check the background sound  
+      Background_Sound.play(); // play the background sound 
+      Background_Sound.rewind(); // when background sound is finish, re-play the sound
+    }
 
 
-        // It's the background
-        if (allobjects.get(i) instanceof Background) {
-          allobjects.get(i).speed = game_speed;
-        } // Background.
+    for (int i = 0; i < allobjects.size (); i++) { //loop through the all objects
+
+      // its it's a background
+      if (allobjects.get(i) instanceof Background) {
+        allobjects.get(i).speed = game_speed;
+      } // end if Background.
 
 
-
-
-        // It's a car
-        if (allobjects.get(i) instanceof Car) {
-          Car car = (Car) allobjects.get(i);
-          respawnCars(car);
-          for (int j = 0; j < allobjects.size (); j++) {
-            if (j != i) {
-              if (allobjects.get(j) instanceof Player) {
-                Player player = (Player) allobjects.get(j);
-                carCrashesIntoPlayer(car, player);
-              }
-            }
-          }
-        } // Car.
-
-
-
-        // It's a horse
-        if (allobjects.get(i) instanceof Horse) {
-          Horse horse = (Horse) allobjects.get(i);
-          respawnHorse(horse);
-          for (int j = 0; j < allobjects.size (); j++) {
-            if (j != i) {
-              if (allobjects.get(j) instanceof Player) {
-                Player player = (Player) allobjects.get(j);
-                HorseCrashesIntoPlayer(horse, player);
-              }
-            }
-          }
-        } // horse.
-
-
-
-        // extra health
-        if ( allobjects.get(i) instanceof Extra_Health) {
-          Extra_Health eh = (Extra_Health) allobjects.get(i);
-          respawnExtraHealth(eh);
-
-          for (int j = 0; j < allobjects.size (); j++) {
-            if (j != i) {
-              if (allobjects.get(j) instanceof Player) {
-                Player p = (Player) allobjects.get(j);
-                PLayerGetsExtraHealth(eh, p);
-              }
-            }
-          }
-        }//end extra health
-
-
-
-
-        // It's a player
-        if (allobjects.get(i) instanceof Player) {
-          Player p = (Player) allobjects.get(i);
-          PlayersInfo(p);
-          inBounds(p);
-          PlayerScore(p);
-          if (p.started && p.pos.y < 400) {
-            if (game_speed < max_speed)
-            {
-              game_speed += 0.1;
-            }
-          } else if (p.started && p.pos.y > 500) {
-            if (game_speed > min_speed)
-            {
-              game_speed -= 0.1;
-            }
-          }
-
-          for (int j = 0; j < allobjects.size (); j++) {
-
+      // if it's a car
+      if (allobjects.get(i) instanceof Car) {
+        Car car = (Car) allobjects.get(i);
+        respawnCars(car);
+        for (int j = 0; j < allobjects.size (); j++) {
+          if (j != i) {
             if (allobjects.get(j) instanceof Player) {
-              Player p2 = (Player) allobjects.get(j);
-              PlayerCrashesIntoPlayer(p, p2);
-            }
-
-            if ( allobjects.get(j) instanceof Car) {
-              Car c = (Car) allobjects.get(j);
-              PlayerShootCar(p, c);
-            }
-
-            if ( allobjects.get(j) instanceof Horse) {
-              Horse h = (Horse) allobjects.get(j);
-              PlayerShootHorse(p, h);
-            }
-
-            if ( allobjects.get(j) instanceof Car) {
-              Car c = (Car) allobjects.get(j);
-              PlayerBombCar(p, c);
-            }
-
-            if ( allobjects.get(j) instanceof Horse) {
-              Horse h = (Horse) allobjects.get(j);
-              PlayerBombHorse(p, h);
+              Player player = (Player) allobjects.get(j);
+              carCrashesIntoPlayer(car, player);
             }
           }
-        } // Player.
-
-
-
-
-        allobjects.get(i).update();
-        allobjects.get(i).display();
-
-        if (allobjects.get(i).alive == false) {
-          allobjects.remove(allobjects.get(i));
         }
-      } // End for loop.
-    
+      } // end if Car.
+
+
+
+      // if it's a horse
+      if (allobjects.get(i) instanceof Horse) {
+        Horse horse = (Horse) allobjects.get(i);
+        respawnHorse(horse);
+        for (int j = 0; j < allobjects.size (); j++) {
+          if (j != i) {
+            if (allobjects.get(j) instanceof Player) {
+              Player player = (Player) allobjects.get(j);
+              HorseCrashesIntoPlayer(horse, player);
+            }
+          }
+        }
+      } //end if horse.
+
+
+
+      // if its an extra health
+      if ( allobjects.get(i) instanceof Extra_Health) {
+        Extra_Health eh = (Extra_Health) allobjects.get(i);
+        respawnExtraHealth(eh);
+
+        for (int j = 0; j < allobjects.size (); j++) {
+          if (j != i) {
+            if (allobjects.get(j) instanceof Player) {
+              Player p = (Player) allobjects.get(j);
+              PLayerGetsExtraHealth(eh, p);
+            }
+          }
+        }
+      }//end if extra health
+
+
+
+
+      // if it's a player
+      if (allobjects.get(i) instanceof Player) {
+        Player p = (Player) allobjects.get(i);
+        PlayersInfo(p);//call the PlayersInfo mehthod and pass the player
+        inBounds(p);//call the inBounds mehthod and pass the player
+        PlayerScoreCheck(p); //call the PlayerScoreCheck mehthod and pass the player
+        
+        if (p.started && p.pos.y < 400) {
+          if (game_speed < max_speed)
+          {
+            game_speed += 0.1;
+          }
+        } else if (p.started && p.pos.y > 500) {
+          if (game_speed > min_speed)
+          {
+            game_speed -= 0.1;
+          }
+        }
+
+        for (int j = 0; j < allobjects.size (); j++) {
+
+          if (allobjects.get(j) instanceof Player) {
+            Player p2 = (Player) allobjects.get(j);
+            //PlayerCrashesIntoPlayer(p, p2);
+          }
+
+          if ( allobjects.get(j) instanceof Car) {
+            Car c = (Car) allobjects.get(j);
+            PlayerShootCar(p, c); //call the PlayerShootCar mehthod and pass the player and the car
+          }
+
+          if ( allobjects.get(j) instanceof Horse) {
+            Horse h = (Horse) allobjects.get(j);
+            PlayerShootHorse(p, h); //call the PlayerShootHorse mehthod and pass the player and the Horse
+          }
+
+          if ( allobjects.get(j) instanceof Car) {
+            Car c = (Car) allobjects.get(j);
+            PlayerBombCar(p, c); //call the PlayerBombCar mehthod and pass the player and the car
+          }
+
+          if ( allobjects.get(j) instanceof Horse) {
+            Horse h = (Horse) allobjects.get(j);
+            PlayerBombHorse(p, h); //call the PlayerBombHorse mehthod and pass the player and the horse
+          }
+        }
+      } // Player.
+
+
+
+
+      allobjects.get(i).update(); //update all objects
+      allobjects.get(i).display(); //display all objects
+
+      if (allobjects.get(i).alive == false) { //if all objects alive is false
+        allobjects.remove(allobjects.get(i)); // than remove it from the array list
+      }
+    } // End all objects for loop.
+
+    if (PlayerPlaying == PlayerDead) {
+      game_state="GameOver";
+    }
   } // End playing.
 
-  else if (game_state == "GameOver") {
-    // background(0);
-    //textFont(font1);
-    //fill(255, 0, 0);
-    //text("Game Over", Cent_X-50, Cent_Y-300);
-    Background_Sound.pause();
+  else if (game_state == "GameOver") { //if gamestate is equal to gameover than draw the game over screen
+
+    Background_Sound.pause(); //stop the background sound
     image(imgOver, 0, 0, width, height);
     textFont(font1);
     fill(255, 0, 0);
     text("Game Over", Cent_X-50, Cent_Y-190);
 
-    ////////////////////////////////////////////////////////////////////////
-    for (GameObject eachobject : allobjects)
-    {
-      if (eachobject instanceof Player) {
-        Player p = (Player) eachobject;
 
-        if (p.index == 1 && p.started) {
+    for (int i = 0; i < allobjects.size (); i++) {
+
+      if (allobjects.get(i) instanceof Player) {
+        Player p = (Player) allobjects.get(i);
+
+        if (p.index == 1 ) {//display player 1 score when game is over
           textFont(font1);
           fill(255, 128, 0);
           text("Player 1: ", Cent_X-330, Cent_Y-150);
           text("Score: " + p.score, Cent_X-330, Cent_Y-110);
-          //p.alive=false;
-          //p.started=false;
         }
-        if (p.index == 2 && p.started) {
+        if (p.index == 2 ) { //display player 2 score when game is over
           textFont(font1);
           fill(0, 255, 0);
           text("Player 2: ", Cent_X+200, Cent_Y-150);
           text("Score: " + p.score, Cent_X+200, Cent_Y-110);
-          //p.alive=false;
-          //p.started=false;
         }
         if (mousePressed) {
           if ((mouseX > Cent_X-200 && mouseX <Cent_X+210)&&(mouseY > Cent_Y+200 && mouseY < Cent_Y+230)) {
-            //p.alive=false;
+            //reset the player variables
+            p.coin = 0;
             p.started=false;
-            game_state = "MainScreen";
+            p.score=0;
+            p.health=50;
+            game_speed = 1.1f;
+            p.pos.x = x;
+            p.pos.y = Cent_Y +190;
+            //x += gap;
           }
+
+          game_state = "MainScreen";//bring the player back to main screen to insert coin and play agian
         }
       }
     }
@@ -374,8 +394,8 @@ void setUpPlayerControllers()
 {
   XML xml = loadXML("arcade.xml");
   XML[] children = xml.getChildren("player");
-  int gap =325;
-  int x = 155;
+  //int gap =325;
+  //int x = 155;
   for (int i = 0; i < children.length; i ++)  
   {
     XML playerXML = children[i];
@@ -393,10 +413,7 @@ void setUpPlayerControllers()
 
 
 
-
-
-
-void inBounds(GameObject player)
+void inBounds(GameObject player)//methods to check the player position 
 {
   if (player.pos.x > ((width/4)*3) -player.w)
   {
@@ -418,7 +435,7 @@ void inBounds(GameObject player)
 
 
 
-void respawnCars(GameObject car) {
+void respawnCars(GameObject car) { //method to repawn cars
   if (car.pos.y > height) {
     car.alive = false;
     int rnd = (int) random(1, 5);
@@ -426,14 +443,14 @@ void respawnCars(GameObject car) {
   }
 }//end respawnCars
 
-void respawnExtraHealth(GameObject eh) {
+void respawnExtraHealth(GameObject eh) { //method to repawn extra health
   if (eh.pos.y > height) {
     eh.alive = false;
     allobjects.add(new Extra_Health("extralive.png"));
   }
 }//end respawnExtraHealth
 
-void respawnHorse(GameObject horse) {
+void respawnHorse(GameObject horse) { //method to repawn horses
   if (horse.pos.y > height) {
     horse.alive = false;
     allobjects.add(new Horse("horse.png"));
@@ -442,7 +459,7 @@ void respawnHorse(GameObject horse) {
 
 
 
-void carCrashesIntoPlayer(Car c, Player p) {
+void carCrashesIntoPlayer(Car c, Player p) { // method to check cars collision with player
   if (p.started) {
     if (c.pos.y + c.h > p.pos.y && c.pos.y < p.pos.y + p.h && c.pos.x + c.w > p.pos.x && c.pos.x < p.pos.x+p.w) {
       Crash_Sound.rewind();
@@ -456,7 +473,7 @@ void carCrashesIntoPlayer(Car c, Player p) {
 }//end carCrashesIntoPlayer
 
 
-void PlayerShootCar(Player p, Car c) {
+void PlayerShootCar(Player p, Car c) { // method to check player shoot car
   if (p.started) {
     for (int i =0; i < p.bullets.size (); i++) {
       if (p.bullets.get(i).pos.y < c.pos.y + c.h &&
@@ -473,7 +490,7 @@ void PlayerShootCar(Player p, Car c) {
   }
 }//end PlayerShootCar
 
-void PlayerShootHorse(Player p, Horse h) {
+void PlayerShootHorse(Player p, Horse h) { // method to check player shoot horse
   if (p.started) {
     for (int i =0; i < p.bullets.size (); i++) {
       if (p.bullets.get(i).pos.y < h.pos.y + h.h &&
@@ -491,7 +508,7 @@ void PlayerShootHorse(Player p, Horse h) {
   }
 }//end PlayerShootHorse
 
-void PlayerBombCar(Player p, Car c) {
+void PlayerBombCar(Player p, Car c) { // method to check player bomb car
   if (p.started) {
     for (int i =0; i < p.bombs.size (); i++) {
       if (p.bombs.get(i).pos.y < c.pos.y + c.h &&
@@ -501,7 +518,7 @@ void PlayerBombCar(Player p, Car c) {
         explosion_Sound.rewind();
         explosion_Sound.play();
         p.bombs.get(i).alive = false;
-        image(bomb, c.pos.x, c.pos.y, c.w, c.h);
+        //image(bomb, c.pos.x, c.pos.y, c.w, c.h);
         p.score +=10;
         c.alive = false;
         int rnd = (int) random(1, 6);
@@ -511,7 +528,7 @@ void PlayerBombCar(Player p, Car c) {
   }
 }//end PlayerBombCar
 
-void PlayerBombHorse(Player p, Horse h) {
+void PlayerBombHorse(Player p, Horse h) { // method to check player bomb horse
   if (p.started) {
     for (int i =0; i < p.bombs.size (); i++) {
       if (p.bombs.get(i).pos.y < h.pos.y + h.h &&
@@ -520,7 +537,7 @@ void PlayerBombHorse(Player p, Horse h) {
         p.bombs.get(i).pos.x < h.pos.x + h.w) {
         explosion_Sound.rewind();
         explosion_Sound.play();
-        image(bomb, h.pos.x, h.pos.y, h.w, h.h);
+        //image(bomb, h.pos.x, h.pos.y, h.w, h.h);
         p.bombs.get(i).alive = false;
         p.score +=15;
         h.alive = false;
@@ -531,37 +548,50 @@ void PlayerBombHorse(Player p, Horse h) {
 }//end PlaPlayerBombHorse
 
 
-void HorseCrashesIntoPlayer(Horse h, Player p) {
+void HorseCrashesIntoPlayer(Horse h, Player p) { // method to check horse collision with player
   if (p.started) {
     if (h.pos.y + h.h > p.pos.y && h.pos.y < p.pos.y + p.h && h.pos.x + h.w > p.pos.x && h.pos.x < p.pos.x+p.w) {
       horse_Sound.rewind();
       horse_Sound.play();
       h.alive = false;
-
       allobjects.add(new Horse("horse.png"));
       p.health-=20;
     }
   }
 }//HorseCrashesIntoPlayer
 
-void PlayerCrashesIntoPlayer(Player p1, Player p2) {
-  if (p1.started && p2.started) {
-    if (p1.pos.y < p2.pos.y + p2.h &&
-      p1.pos.y + p1.h > p2.pos.y &&
-      p1.pos.x + p1.w > p2.pos.x &&
-      p1.pos.x < p2.pos.x + p2.w) {
+void PLayerGetsExtraHealth(Extra_Health eh, Player p ) { // method to check player get the extra health
+  if (p.started) {
+    if (eh.pos.y + eh.h > p.pos.y && eh.pos.y < p.pos.y + p.h && eh.pos.x + eh.w > p.pos.x && eh.pos.x < p.pos.x+p.w) {
+      repair_Sound.rewind();
+      repair_Sound.play();
+      eh.alive = false;
+      allobjects.add(new Extra_Health("extralive.png"));
 
-      //p1.alive = false;
-      //p2.alive = false;
-      p1.speed = -p1.speed;
-      p2.speed = -p2.speed;
-      println("player crashed");
+      if (p.health < 50) {
+        p.health +=10;
+      }
     }
   }
-}//end PlayerCrashesIntoPlayer
+}//end PLayerGetsExtraHealth
 
+/*
+void PlayerCrashesIntoPlayer(Player p1, Player p2) {
+ if (p1.started && p2.started) {
+ if (p1.pos.y < p2.pos.y + p2.h &&
+ p1.pos.y + p1.h > p2.pos.y &&
+ p1.pos.x + p1.w > p2.pos.x &&
+ p1.pos.x < p2.pos.x + p2.w) {
+ 
+ p1.speed = -p1.speed;
+ p2.speed = -p2.speed;
+ println("player crashed");
+ }
+ }
+ }//end PlayerCrashesIntoPlayer
+ */
 
-void PlayersInfo(Player p) {
+void PlayersInfo(Player p) { //method to show player score , health and speed
 
   if (p.index == 1 && p.started) {
     textFont(font1);
@@ -571,7 +601,6 @@ void PlayersInfo(Player p) {
     //text(p1.score, Cent_X-330, Cent_Y-210);
     text("Health: " + p.health, Cent_X-330, Cent_Y-170);
     text("Speed: " + ( ((int) game_speed * p.pos.y)/100 ) + "kmp", Cent_X-330, Cent_Y-130);
-    text("Speed: " + p.pspeed + "kmp", Cent_X-330, Cent_Y-90);
   }
   if (p.index == 2 && p.started) {
     textFont(font1);
@@ -581,59 +610,17 @@ void PlayersInfo(Player p) {
     text("Health: "+ p.health, Cent_X+200, Cent_Y-170);
     text("Speed: "+ ( ((int) game_speed * p.pos.y)/100 ) + "kmp", Cent_X+180, Cent_Y-130);
   }
-}
+}//end PlayersInfo
 
-void PLayerGetsExtraHealth(Extra_Health eh, Player p ) {
-  if (p.started) {
-    if (eh.pos.y + eh.h > p.pos.y && eh.pos.y < p.pos.y + p.h && eh.pos.x + eh.w > p.pos.x && eh.pos.x < p.pos.x+p.w) {
-      repair_Sound.rewind();
-      repair_Sound.play();
-      eh.alive = false;
-      //int rnd = (int) random(1, 6);
-      allobjects.add(new Extra_Health("extralive.png"));
 
-      if (p.health < 50) {
-        p.health +=10;
-      }
+
+void PlayerScoreCheck(Player p) {//method to check player score regarding game over screen
+
+  if (p.started ) {
+    if (p.health <=0) {
+      PlayerDead+=1;
+      p.started= false;
     }
-  }
-}
-
-void PlayerScore(Player p) {
-  if (p.started) {
-    //for(Player p: p){
-    // if(p.health>0){
-    //  p.update();
-    //  p.display();
-    // }
-    //}
-
-
-
-    if (p.index == 1 && p.health <=0) {
-      textFont(font1);
-      fill(255, 0, 0);
-      text("PLayer 1 gone", Cent_X-330, Cent_Y-100);
-      game_state = "GameOver";
-      //p.alive=false;
-    }  
-    if (p.index == 2 && p.health <=0) {
-
-      textFont(font1);
-      fill(255, 0, 0);
-      text("PLayer 2 gone", Cent_X+200, Cent_Y-100);
-      game_state = "GameOver";
-      // p.alive=false;
-    }
-
-    /*
-       else if(p.index == 1 && p.health ==0  && p.alive==false ) {
-     //p.alive=false;
-     textFont(font1);
-     fill(255, 0, 0);
-     text("Game Over", Cent_X, Cent_Y);
-     }
-     */
-  }
-}
+  }//end if started
+}//end PlayerScoreCheck
 
